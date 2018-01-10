@@ -12,6 +12,8 @@
 
 	<context:component-scan base-package="com.quiteharmless.mbrweb.controller" />
 
+	<context:annotation-config />
+
 	<mvc:annotation-driven />
 
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
@@ -33,7 +35,11 @@
 		<property name="dataSource" ref="azbcDB" />
 	</bean>
 
-	<bean id="memberModelService" class="com.quiteharmless.mbrweb.model.service.MemberModelService">
+	<bean id="abstractBaseModelService" abstract="true" class="com.quiteharmless.mbrweb.model.service.AbstractBaseModelService">
 		<property name="jdbcTemplate" ref="azbcDbJdbcTemplate"></property>
 	</bean>
+
+	<bean id="visitorModelService" parent="abstractBaseModelService" class="com.quiteharmless.mbrweb.model.service.VisitorModelService" />
+
+	<bean id="memberInfoDataModelService" parent="abstractBaseModelService" class="com.quiteharmless.mbrweb.model.service.MemberInfoDataModelService" />
 </beans>
