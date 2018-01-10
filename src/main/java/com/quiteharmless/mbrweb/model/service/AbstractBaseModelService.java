@@ -1,11 +1,13 @@
 package com.quiteharmless.mbrweb.model.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.quiteharmless.mbrweb.model.IModelService;
 
 public abstract class AbstractBaseModelService implements IModelService {
 
+	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	/**

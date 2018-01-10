@@ -10,7 +10,7 @@
 	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
 ">
 
-	<context:component-scan base-package="com.quiteharmless.mbrweb.controller" />
+	<context:component-scan base-package="com.quiteharmless.mbrweb" />
 
 	<context:annotation-config />
 
@@ -31,15 +31,7 @@
 
 	<jee:jndi-lookup id="azbcDB" jndi-name="jdbc/azbcDB" />
 
-	<bean id="azbcDbJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<property name="dataSource" ref="azbcDB" />
 	</bean>
-
-	<bean id="abstractBaseModelService" abstract="true" class="com.quiteharmless.mbrweb.model.service.AbstractBaseModelService">
-		<property name="jdbcTemplate" ref="azbcDbJdbcTemplate"></property>
-	</bean>
-
-	<bean id="visitorModelService" parent="abstractBaseModelService" class="com.quiteharmless.mbrweb.model.service.VisitorModelService" />
-
-	<bean id="memberInfoDataModelService" parent="abstractBaseModelService" class="com.quiteharmless.mbrweb.model.service.MemberInfoDataModelService" />
 </beans>

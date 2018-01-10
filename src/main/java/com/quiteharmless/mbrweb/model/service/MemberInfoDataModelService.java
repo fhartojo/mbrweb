@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.stereotype.Component;
 
 import com.quiteharmless.mbrweb.bo.MemberInfo;
 import com.quiteharmless.mbrweb.bo.MemberInfoData;
@@ -15,6 +16,7 @@ import com.quiteharmless.mbrweb.model.rowmapper.MemberInfoRowMapper;
 import com.quiteharmless.mbrweb.util.Constants;
 import com.quiteharmless.mbrweb.util.MemberInfoStatus;
 
+@Component("memberInfoDataModelService")
 public class MemberInfoDataModelService extends AbstractBaseModelService implements IMemberInfoDataModelService {
 
 	PreparedStatementCreatorFactory getMemberInfoByLookupIdPscf = new PreparedStatementCreatorFactory(

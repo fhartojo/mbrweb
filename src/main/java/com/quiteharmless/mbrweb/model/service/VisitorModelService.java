@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.stereotype.Component;
 
 import com.quiteharmless.mbrweb.bo.MemberInfo;
 import com.quiteharmless.mbrweb.bo.MemberInfoData;
@@ -19,6 +20,7 @@ import com.quiteharmless.mbrweb.util.Constants;
 import com.quiteharmless.mbrweb.util.MemberInfoStatus;
 import com.quiteharmless.mbrweb.util.MemberVisitStatus;
 
+@Component("visitorModelService")
 public class VisitorModelService extends AbstractBaseModelService implements IVisitorModelService {
 
 	@Autowired
