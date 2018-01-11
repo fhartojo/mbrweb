@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import com.quiteharmless.mbrweb.bo.MemberInfo;
 import com.quiteharmless.mbrweb.bo.MemberInfoData;
 import com.quiteharmless.mbrweb.bo.Visitor;
 import com.quiteharmless.mbrweb.model.IMemberInfoDataModelService;
+import com.quiteharmless.mbrweb.model.IMembershipTypeModelService;
 import com.quiteharmless.mbrweb.model.IVisitorModelService;
 import com.quiteharmless.mbrweb.util.Constants;
 import com.quiteharmless.mbrweb.util.MemberInfoStatus;
@@ -24,14 +26,20 @@ import com.quiteharmless.mbrweb.util.MemberVisitStatus;
 public class VisitorModelService extends AbstractBaseModelService implements IVisitorModelService {
 
 	@Autowired
+	private JdbcTemplate visitorJdbcTemplate;
+
+	@Autowired
 	private MessageSource messageSource;
 
 	@Autowired
 	private IMemberInfoDataModelService memberInfoDataModelService;
 
+	@Autowired
+	private IMembershipTypeModelService membershipTypeModelService;
+
 	PreparedStatementCreatorFactory insertMemberVisitHistoryPscf = new PreparedStatementCreatorFactory(
-			"insert into mbr_visit_hist(mbr_id, visit_st_cd, visit_ts) values(?, ?, datetime('now'))"
-			, Types.BIGINT, Types.INTEGER
+			"insert into mbr_visit_hist(mbr_id, visit_admit, visit_st_cd, visit_ts, visit_note_txt) values(?, ?, ?, datetime('now'), ?)"
+			, Types.BIGINT, Types.BOOLEAN, Types.INTEGER, Types.VARCHAR
 	);
 
 	private static final Logger log = LogManager.getLogger(VisitorModelService.class);
@@ -75,9 +83,16 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 			if (memberInfo.getEndDate().isAfter(memberInfo.getTodayDate())) {
 				memberVisitStatus = MemberVisitStatus.ADMIT;
 			} else {
-				if (memberInfo.isActiveIndicator()) {
-					memberVisitStatus = MemberVisitStatus.EXPIRED;
-					memberVisitStatusMessage = messageSource.getMessage("visit.conditional.expired", null, Locale.getDefault());
+				if (membershipTypeModelService.isAutoRenew(memberInfo.getMembershipTypeId())) {
+					if (memberInfo.getActiveIndicator()) {
+						memberVisitStatus = MemberVisitStatus.EXPIRED;
+						memberVisitStatusMessage = messageSource.getMessage("visit.conditional.expired", null, Locale.getDefault());
+					} else {
+						memberVisitStatus = MemberVisitStatus.REJECT;
+						memberVisitStatusMessage = messageSource.getMessage("visit.reject.expired", null, Locale.getDefault());
+
+						visitor.setOk(false);
+					}
 				} else {
 					memberVisitStatus = MemberVisitStatus.REJECT;
 					memberVisitStatusMessage = messageSource.getMessage("visit.reject.expired", null, Locale.getDefault());
@@ -88,7 +103,7 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 			break;
 
 		case NOT_FOUND:
-			memberVisitStatus = MemberVisitStatus.REJECT;
+			memberVisitStatus = MemberVisitStatus.UNKNOWN;
 			memberVisitStatusMessage = messageSource.getMessage("visit.reject.unknown", null, Locale.getDefault());
 
 			visitor.setMemberId(Constants.UNKNOWN_VISITOR_ID);
@@ -102,15 +117,15 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 
 		visitor.setNotes(memberVisitStatusMessage);
 
-		insertVisitorData(visitor.getMemberId(), memberVisitStatus);
+		insertVisitorData(visitor, memberVisitStatus);
 
 		return visitor;
 	}
 
-	private void insertVisitorData(int id, MemberVisitStatus memberVisitStatus) {
-		PreparedStatementCreator psc = insertMemberVisitHistoryPscf.newPreparedStatementCreator(new Object[] {id, memberVisitStatus.getValue()});
+	private void insertVisitorData(Visitor visitor, MemberVisitStatus memberVisitStatus) {
+		PreparedStatementCreator psc = insertMemberVisitHistoryPscf.newPreparedStatementCreator(new Object[] {visitor.getMemberId(), visitor.isOk(), memberVisitStatus.getValue(), visitor.getNotes()});
 
-		int rowNum = this.getJdbcTemplate().update(psc);
+		int rowNum = this.visitorJdbcTemplate.update(psc);
 
 		log.debug("rowNum = " + rowNum);
 	}

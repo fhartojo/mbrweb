@@ -29,9 +29,14 @@
 
 	<mvc:default-servlet-handler/>
 
-	<jee:jndi-lookup id="azbcDB" jndi-name="jdbc/azbcDB" />
+	<jee:jndi-lookup id="memberDB" jndi-name="jdbc/memberDB" />
+	<jee:jndi-lookup id="visitorDB" jndi-name="jdbc/visitorDB" />
 
-	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="azbcDB" />
+	<bean id="memberJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="memberDB" />
+	</bean>
+
+	<bean id="visitorJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="visitorDB" />
 	</bean>
 </beans>

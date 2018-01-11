@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.stereotype.Component;
@@ -19,53 +21,50 @@ import com.quiteharmless.mbrweb.util.MemberInfoStatus;
 @Component("memberInfoDataModelService")
 public class MemberInfoDataModelService extends AbstractBaseModelService implements IMemberInfoDataModelService {
 
+	@Autowired
+	private JdbcTemplate memberJdbcTemplate;
+
 	PreparedStatementCreatorFactory getMemberInfoByLookupIdPscf = new PreparedStatementCreatorFactory(
 			"select "
-			+	"member.mbr_id "
-			+	", member.first_nm "
-			+ 	",member.last_nm "
+			+	"mbr.mbr_id "
+			+	", mbr.first_nm "
+			+ 	",mbr.last_nm "
+			+	",mbr_mbrship.mbrship_type_id "
 			+ 	",mbr_mbrship.active_ind "
 			+ 	",mbr_mbrship.mbr_mbrship_end_dt "
-			+ 	",mbrship_fmly.mbr_hof_id "
+			+ 	",mbr_mbrship.mbr_hof_id "
 			+ 	",date('now','localtime') as today_dt "
 			+ "from "
 			+ 	"mbr_lu "
-			+ 	",member "
-			+ "left join "
-			+ 	"mbrship_fmly "
-			+ "on "
-			+ 	"mbrship_fmly.mbr_id=mbr_lu.mbr_id "
+			+ 	",mbr "
 			+ "left join "
 			+ 	"mbr_mbrship "
 			+ "on "
 			+ 	"mbr_mbrship.mbr_id=mbr_lu.mbr_id "
 			+ "where "
 			+ 	"mbr_lu.mbr_lu_id=? "
-			+ 	"and member.mbr_id=mbr_lu.mbr_id"
+			+ 	"and mbr.mbr_id=mbr_lu.mbr_id"
 			, Types.VARCHAR
 	);
 
 	PreparedStatementCreatorFactory getMemberInfoByIdPscf = new PreparedStatementCreatorFactory(
 			"select "
-			+ 	"member.mbr_id "
-			+ 	",member.first_nm "
-			+ 	",member.last_nm "
+			+ 	"mbr.mbr_id "
+			+ 	",mbr.first_nm "
+			+ 	",mbr.last_nm "
+			+	",mbr_mbrship.mbrship_type_id "
 			+ 	",mbr_mbrship.active_ind "
 			+ 	",mbr_mbrship.mbr_mbrship_end_dt "
-			+ 	",mbrship_fmly.mbr_hof_id "
+			+ 	",mbr_mbrship.mbr_hof_id "
 			+ 	",date('now','localtime') as today_dt "
 			+ "from "
-			+ 	"member "
-			+ "left join "
-			+ 	"mbrship_fmly "
-			+ "on "
-			+ 	"mbrship_fmly.mbr_id=member.mbr_id "
+			+ 	"mbr "
 			+ "left join "
 			+ 	"mbr_mbrship "
 			+ "on "
-			+ 	"mbr_mbrship.mbr_id=member.mbr_id "
+			+ 	"mbr_mbrship.mbr_id=mbr.mbr_id "
 			+ "where "
-			+ 	"member.mbr_id=?"
+			+ 	"mbr.mbr_id=?"
 			, Types.BIGINT
 	);
 
@@ -80,11 +79,13 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 		MemberInfoData memberInfoData = new MemberInfoData();
 		MemberInfoStatus memberInfoStatus = MemberInfoStatus.NOT_FOUND;
 
+		log.debug("id:  " + id + "; isLookupId:  " + isLookupId);
+
 		if (!isLookupId) {
-			int memberId = Constants.UNKNOWN_VISITOR_ID;
+			Long memberId = Constants.UNKNOWN_VISITOR_ID;
 
 			try {
-				memberId = Integer.parseInt(id);
+				memberId = Long.parseLong(id);
 			} catch (NumberFormatException e) {
 			}
 
@@ -114,7 +115,7 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 
 						if (hofMemberInfo != null) {
 							if (isMemberInfoDataSufficient(hofMemberInfo)) {
-								memberInfo.setActiveIndicator(hofMemberInfo.isActiveIndicator());
+								memberInfo.setActiveIndicator(hofMemberInfo.getActiveIndicator());
 								memberInfo.setEndDate(hofMemberInfo.getEndDate());
 
 								memberInfoStatus = MemberInfoStatus.FOUND;
@@ -141,7 +142,7 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 
 	private MemberInfo getMemberInfo(PreparedStatementCreator psc) {
 		if (psc != null) {
-			List<MemberInfo> memberInfoList = this.getJdbcTemplate().query(psc, new MemberInfoRowMapper());
+			List<MemberInfo> memberInfoList = this.memberJdbcTemplate.query(psc, new MemberInfoRowMapper());
 
 			log.debug("memberInfoList.size() = " + memberInfoList.size());
 

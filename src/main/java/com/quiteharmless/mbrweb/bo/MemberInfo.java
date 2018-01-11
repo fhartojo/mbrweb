@@ -4,25 +4,27 @@ import java.time.LocalDate;
 
 public class MemberInfo {
 
-	private int memberId;
+	private Long memberId;
 
 	private String firstName;
 
 	private String lastName;
 
-	private boolean activeIndicator;
+	private Long membershipTypeId;
+
+	private Boolean activeIndicator;
 
 	private LocalDate endDate;
 
-	private int headOfFamilyId;
+	private Long headOfFamilyId;
 
 	private LocalDate todayDate;
 
-	public int getMemberId() {
+	public Long getMemberId() {
 		return memberId;
 	}
 
-	public void setMemberId(int memberId) {
+	public void setMemberId(Long memberId) {
 		this.memberId = memberId;
 	}
 
@@ -42,11 +44,19 @@ public class MemberInfo {
 		this.lastName = lastName;
 	}
 
-	public boolean isActiveIndicator() {
+	public Long getMembershipTypeId() {
+		return membershipTypeId;
+	}
+
+	public void setMembershipTypeId(Long membershipTypeId) {
+		this.membershipTypeId = membershipTypeId;
+	}
+
+	public Boolean getActiveIndicator() {
 		return activeIndicator;
 	}
 
-	public void setActiveIndicator(boolean activeIndicator) {
+	public void setActiveIndicator(Boolean activeIndicator) {
 		this.activeIndicator = activeIndicator;
 	}
 
@@ -58,11 +68,11 @@ public class MemberInfo {
 		this.endDate = endDate;
 	}
 
-	public int getHeadOfFamilyId() {
+	public Long getHeadOfFamilyId() {
 		return headOfFamilyId;
 	}
 
-	public void setHeadOfFamilyId(int headOfFamilyId) {
+	public void setHeadOfFamilyId(Long headOfFamilyId) {
 		this.headOfFamilyId = headOfFamilyId;
 	}
 
@@ -81,6 +91,7 @@ public class MemberInfo {
 				"memberId:" + memberId
 				+ ";firstName:" + firstName
 				+ ";lastName:" + lastName
+				+ ";membershipTypeId:" + membershipTypeId
 				+ ";activeIndicator:" + activeIndicator
 				+ ";endDate:" + endDate
 				+ ";headOfFamilyId:" + headOfFamilyId

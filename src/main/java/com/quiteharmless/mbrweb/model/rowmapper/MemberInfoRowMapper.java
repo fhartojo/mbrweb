@@ -19,15 +19,16 @@ public class MemberInfoRowMapper implements RowMapper<MemberInfo> {
 		MemberInfo memberInfo = new MemberInfo();
 		String dateString;
 
-		memberInfo.setMemberId(rs.getInt("mbr_id"));
+		memberInfo.setMemberId(rs.getLong("mbr_id"));
 		memberInfo.setFirstName(rs.getString("first_nm"));
 		memberInfo.setLastName(rs.getString("last_nm"));
+		memberInfo.setMembershipTypeId(rs.getLong("mbrship_type_id"));
 		memberInfo.setActiveIndicator(rs.getBoolean("active_ind"));
 		dateString = rs.getString("mbr_mbrship_end_dt");
 		if (StringUtils.isNotBlank(dateString)) {
 			memberInfo.setEndDate(LocalDate.parse(dateString, formatter));
 		}
-		memberInfo.setHeadOfFamilyId(rs.getInt("mbr_hof_id"));
+		memberInfo.setHeadOfFamilyId(rs.getLong("mbr_hof_id"));
 		memberInfo.setTodayDate(LocalDate.parse(rs.getString("today_dt"), formatter));
 
 		return memberInfo;

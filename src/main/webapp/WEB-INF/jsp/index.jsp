@@ -17,7 +17,7 @@
 					<form ng-submit="idController.getVisitorInfo()">
 						<md-input-container class="md-block" flex-xs>
 							<label>ID</label>
-							<input type="text" ng-model="idController.lookupId" autofocus>
+							<input type="text" ng-model="idController.lookupId" autofocus ng-trim="true">
 						</md-input-container>
 					</form>
 				</md-content>
