@@ -18,7 +18,7 @@ public class MemberInfo {
 
 	private Long headOfFamilyId;
 
-	private LocalDate todayDate;
+	private String notes;
 
 	public Long getMemberId() {
 		return memberId;
@@ -76,12 +76,12 @@ public class MemberInfo {
 		this.headOfFamilyId = headOfFamilyId;
 	}
 
-	public LocalDate getTodayDate() {
-		return todayDate;
+	public String getNotes() {
+		return notes;
 	}
 
-	public void setTodayDate(LocalDate todayDate) {
-		this.todayDate = todayDate;
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 	@Override

@@ -1,8 +1,15 @@
 package com.quiteharmless.mbrweb.model.service;
 
 import java.sql.Types;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +45,8 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 	private IMembershipTypeModelService membershipTypeModelService;
 
 	PreparedStatementCreatorFactory insertMemberVisitHistoryPscf = new PreparedStatementCreatorFactory(
-			"insert into mbr_visit_hist(mbr_id, visit_admit, visit_st_cd, visit_ts, visit_note_txt) values(?, ?, ?, datetime('now'), ?)"
-			, Types.BIGINT, Types.BOOLEAN, Types.INTEGER, Types.VARCHAR
+			"insert into mbr_visit_hist(mbr_id, visit_admit, visit_st_cd, visit_ts, visit_note_txt) values(?, ?, ?, datetime(?, 'unixepoch'), ?)"
+			, Types.BIGINT, Types.BOOLEAN, Types.INTEGER, Types.TIMESTAMP, Types.VARCHAR
 	);
 
 	private static final Logger log = LogManager.getLogger(VisitorModelService.class);
@@ -49,10 +56,13 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 		log.debug("lookupId:  " + lookupId);
 
 		long now = System.currentTimeMillis();
+		ZonedDateTime todayZdt = Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault());
+		LocalDate todayDate = todayZdt.toLocalDate();
 		MemberInfo memberInfo;
 		MemberInfoData memberInfoData = memberInfoDataModelService.getMemberInfoData(lookupId, true);
 		MemberVisitStatus memberVisitStatus = MemberVisitStatus.REJECT;
 		String memberVisitStatusMessage = "";
+		String customMessage = "";
 		Visitor visitor = new Visitor();
 
 		visitor.setTimestamp(now);
@@ -71,6 +81,10 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 			visitor.setOk(true);
 			visitor.setFirstName(memberInfo.getFirstName());
 			visitor.setLastName(memberInfo.getLastName());
+
+			if (StringUtils.isNotBlank(memberInfo.getNotes())) {
+				customMessage = messageSource.getMessage("visit.customMessage", new Object[] {memberInfo.getNotes()}, Locale.getDefault());
+			}
 		}
 
 		switch (memberInfoData.getStatus()) {
@@ -80,7 +94,7 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 			break;
 
 		case FOUND:
-			if (memberInfo.getEndDate().isAfter(memberInfo.getTodayDate())) {
+			if (memberInfo.getEndDate().isAfter(todayDate)) {
 				memberVisitStatus = MemberVisitStatus.ADMIT;
 			} else {
 				if (membershipTypeModelService.isAutoRenew(memberInfo.getMembershipTypeId())) {
@@ -113,9 +127,9 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 			break;
 		}
 
-		log.debug("memberVisitStatusMessage:  " + memberVisitStatusMessage);
+		log.debug("customMessage:  " + customMessage + "; memberVisitStatusMessage:  " + memberVisitStatusMessage);
 
-		visitor.setNotes(memberVisitStatusMessage);
+		visitor.setNotes(StringUtils.isNotBlank(customMessage) ? customMessage : memberVisitStatusMessage);
 
 		insertVisitorData(visitor, memberVisitStatus);
 
@@ -123,7 +137,7 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 	}
 
 	private void insertVisitorData(Visitor visitor, MemberVisitStatus memberVisitStatus) {
-		PreparedStatementCreator psc = insertMemberVisitHistoryPscf.newPreparedStatementCreator(new Object[] {visitor.getMemberId(), visitor.isOk(), memberVisitStatus.getValue(), visitor.getNotes()});
+		PreparedStatementCreator psc = insertMemberVisitHistoryPscf.newPreparedStatementCreator(new Object[] {visitor.getMemberId(), visitor.isOk(), memberVisitStatus.getValue(), visitor.getTimestamp() / 1000L, visitor.getNotes()});
 
 		int rowNum = this.visitorJdbcTemplate.update(psc);
 

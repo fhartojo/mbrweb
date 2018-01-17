@@ -37,7 +37,7 @@
 			<tbody>
 				<tr ng-repeat="visitor in idController.visitors | orderBy:'-timestamp'" ng-style="{'background-color': visitor.ok ? (visitor.notes == '' ? '#00ff00' : '#ffff00') : '#ff0000'}">
 					<td>{{visitor.timestamp | date : "yyyy/M/d hh:mm:ssa"}}</td>
-					<td>{{("0000" + visitor.memberId).slice(-4)}}</td>
+					<td>{{("00000" + visitor.memberId).slice(-5)}}</td>
 					<td>{{visitor.lastName}}, {{visitor.firstName}}</td>
 					<td>{{visitor.notes}}</td>
 				</tr>

@@ -29,7 +29,7 @@ public class MemberInfoRowMapper implements RowMapper<MemberInfo> {
 			memberInfo.setEndDate(LocalDate.parse(dateString, formatter));
 		}
 		memberInfo.setHeadOfFamilyId(rs.getLong("mbr_hof_id"));
-		memberInfo.setTodayDate(LocalDate.parse(rs.getString("today_dt"), formatter));
+		memberInfo.setNotes(rs.getString("mbr_note_txt"));
 
 		return memberInfo;
 	}
