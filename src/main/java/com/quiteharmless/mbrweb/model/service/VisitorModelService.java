@@ -89,6 +89,8 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 		case INCOMPLETE:
 			memberVisitStatus = MemberVisitStatus.INCOMPLETE;
 			memberVisitStatusMessage = messageSource.getMessage("visit.conditional.incompleteData", null, Locale.getDefault());
+
+			visitor.setOk(false);
 			break;
 
 		case FOUND:
