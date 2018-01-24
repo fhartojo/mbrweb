@@ -5,12 +5,14 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -41,6 +43,12 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 
 	@Autowired
 	private IMembershipTypeModelService membershipTypeModelService;
+
+	@Value("${managementContact}")
+	private String managementContact;
+
+	@Value("${expirationDaysWarn}")
+	private long expirationDaysWarn;
 
 	PreparedStatementCreatorFactory insertMemberVisitHistoryPscf = new PreparedStatementCreatorFactory(
 			"insert into mbr_visit_hist(mbr_id, visit_admit, visit_st_cd, visit_ts, visit_note_txt) values(?, ?, ?, datetime(?, 'unixepoch'), ?)"
@@ -88,19 +96,31 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 		switch (memberInfoData.getStatus()) {
 		case INCOMPLETE:
 			memberVisitStatus = MemberVisitStatus.INCOMPLETE;
-			memberVisitStatusMessage = messageSource.getMessage("visit.conditional.incompleteData", null, Locale.getDefault());
+			memberVisitStatusMessage = messageSource.getMessage("visit.reject.incompleteData", new Object[] {this.managementContact}, Locale.getDefault());
 
 			visitor.setOk(false);
 			break;
 
 		case FOUND:
-			if (memberInfo.getEndDate().isAfter(todayDate)) {
+			long daysRemaining = todayDate.until(memberInfo.getEndDate(), ChronoUnit.DAYS);
+
+			if (daysRemaining >= 0L) {
 				memberVisitStatus = MemberVisitStatus.ADMIT;
+
+				if (daysRemaining <= expirationDaysWarn) {
+					if (daysRemaining > 1L) {
+						memberVisitStatusMessage = messageSource.getMessage("visit.admit.expirationDaysWarn", new Object[] {daysRemaining}, Locale.getDefault());
+					} else if (daysRemaining > 0L) {
+						memberVisitStatusMessage = messageSource.getMessage("visit.admit.expirationTomorrowWarn", null, Locale.getDefault());
+					} else {
+						memberVisitStatusMessage = messageSource.getMessage("visit.admit.expirationTodayWarn", null, Locale.getDefault());
+					}
+				}
 			} else {
 				if (membershipTypeModelService.isAutoRenew(memberInfo.getMembershipTypeId())) {
 					if (memberInfo.getActiveIndicator()) {
 						memberVisitStatus = MemberVisitStatus.EXPIRED;
-						memberVisitStatusMessage = messageSource.getMessage("visit.conditional.expired", null, Locale.getDefault());
+						memberVisitStatusMessage = messageSource.getMessage("visit.conditional.expired", new Object[] {this.managementContact}, Locale.getDefault());
 					} else {
 						memberVisitStatus = MemberVisitStatus.REJECT;
 						memberVisitStatusMessage = messageSource.getMessage("visit.reject.expired", null, Locale.getDefault());

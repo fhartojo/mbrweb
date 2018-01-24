@@ -173,6 +173,8 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 			if (memberInfo.getEndDate() == null) {
 				return false;
 			} else {
+				log.debug("memberInfo.endDate:  " + memberInfo.getEndDate());
+
 				return true;
 			}
 		} else {

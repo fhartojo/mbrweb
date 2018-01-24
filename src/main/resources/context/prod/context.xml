@@ -1,4 +1,6 @@
 <Context>
+	<Resource name="jdbc/appDB" type="javax.sql.DataSource" driverClassName="org.sqlite.JDBC"
+		url="jdbc:sqlite:/home/tomcat/data/app.db" />
 	<Resource name="jdbc/memberDB" type="javax.sql.DataSource" driverClassName="org.sqlite.JDBC"
 		url="jdbc:sqlite:/home/tomcat/data/azbcMember.db" />
 	<Resource name="jdbc/visitorDB" type="javax.sql.DataSource" driverClassName="org.sqlite.JDBC"
