@@ -1,3 +1,29 @@
-<p>
-  visitors works!
-</p>
+<div class="example-container mat-elevation-z8">
+  <table mat-table [dataSource]="visitors">
+
+    <ng-container matColumnDef="timestamp">
+      <th mat-header-cell *matHeaderCellDef>Time</th>
+      <td mat-cell *matCellDef="let visitor">{{visitor.timestamp | date : "yyyy/M/d hh:mm:ssa"}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let visitor">{{("00000" + visitor.id).slice(-5)}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let visitor">{{visitor.name}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="notes">
+      <th mat-header-cell *matHeaderCellDef>Notes</th>
+      <td mat-cell *matCellDef="let visitor">{{visitor.notes}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngStyle]="{
+      'background-color': row.ok ? (row.notes === '' ? '#00ff00' : '#ffff00') : '#ff0000'
+    }"></tr>
+  </table>
+</div>
