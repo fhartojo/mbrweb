@@ -1,5 +1,7 @@
 package com.quiteharmless.mbrweb.controller;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,19 +15,26 @@ import com.quiteharmless.mbrweb.bo.Visitor;
 import com.quiteharmless.mbrweb.model.IVisitorModelService;
 
 @Controller
-public class LookupController {
+public class VisitorController {
 
 	@Autowired
 	private IVisitorModelService visitorModelService;
 
-	private static final Logger log = LogManager.getLogger(LookupController.class);
+	private static final Logger log = LogManager.getLogger(VisitorController.class);
 
-	@RequestMapping(value="/lookup/{lookupId}", method=RequestMethod.GET)
-	public @ResponseBody Visitor getVisitorInfo(@PathVariable(value="lookupId") String lookupId) {
-		log.debug("lookupId:  " + lookupId);
+	@RequestMapping(value="/api/visitor/{id}", method=RequestMethod.GET)
+	public @ResponseBody Visitor getVisitor(@PathVariable(value="id") String id) {
+		log.debug("id:  " + id);
 
-		Visitor visitor = visitorModelService.getVisitorInfo(lookupId);
+		Visitor visitor = visitorModelService.getVisitor(id);
 
 		return visitor;
+	}
+
+	@RequestMapping(value="/api/visitors", method=RequestMethod.GET)
+	public @ResponseBody List<Visitor> getVisitors() {
+		List<Visitor> visitors = visitorModelService.getVisitors();
+
+		return visitors;
 	}
 }

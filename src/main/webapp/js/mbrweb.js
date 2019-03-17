@@ -9,7 +9,7 @@ app.controller('IdController', ['$http', function($http) {
 
 	this.getVisitorInfo = function() {
 		if (this.lookupId != "") {
-			$http.get(contextPath + "/lookup/" + this.lookupId)
+			$http.get(contextPath + "/api/visitor/" + this.lookupId)
 			.then(angular.bind(this, function(response) {
 				this.visitors.push(response.data);
 			}), angular.bind(this, function(response) {

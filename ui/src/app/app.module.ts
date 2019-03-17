@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { VisitorLookupComponent } from './visitor-lookup/visitor-lookup.component';
 import { VisitorsComponent } from './visitors/visitors.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { VisitorsComponent } from './visitors/visitors.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     MatTabsModule,
     MatInputModule,
     MatTableModule

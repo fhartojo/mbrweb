@@ -24,7 +24,7 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 	@Autowired
 	private JdbcTemplate memberJdbcTemplate;
 
-	PreparedStatementCreatorFactory getMemberInfoByLookupIdPscf = new PreparedStatementCreatorFactory(
+	PreparedStatementCreatorFactory getMemberInfoPscf = new PreparedStatementCreatorFactory(
 			"select "
 			+	"mbr.mbr_id "
 			+	",mbr.first_nm "
@@ -46,65 +46,33 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 			+ "on "
 			+ 	"mbr_note.mbr_id=mbr_lu.mbr_id "
 			+ "where "
-			+ 	"mbr_lu.mbr_lu_id=? "
+			+ 	"(mbr_lu.mbr_lu_id=? "
+			+	"or mbr.mbr_id=?) "
 			+ 	"and mbr.mbr_id=mbr_lu.mbr_id"
 			, Types.VARCHAR
-	);
-
-	PreparedStatementCreatorFactory getMemberInfoByIdPscf = new PreparedStatementCreatorFactory(
-			"select "
-			+ 	"mbr.mbr_id "
-			+ 	",mbr.first_nm "
-			+ 	",mbr.last_nm "
-			+	",mbr_mbrship.mbrship_type_id "
-			+ 	",mbr_mbrship.active_ind "
-			+ 	",mbr_mbrship.mbr_mbrship_end_dt "
-			+ 	",mbr_mbrship.mbr_hof_id "
-			+	",mbr_note.mbr_note_txt "
-			+ "from "
-			+ 	"mbr "
-			+ "left join "
-			+ 	"mbr_mbrship "
-			+ "on "
-			+ 	"mbr_mbrship.mbr_id=mbr.mbr_id "
-			+ "left join "
-			+	"mbr_note "
-			+ "on "
-			+ 	"mbr_note.mbr_id=mbr.mbr_id "
-			+ "where "
-			+ 	"mbr.mbr_id=?"
 			, Types.BIGINT
 	);
 
 	private static final Logger log = LogManager.getLogger(MemberInfoDataModelService.class);
 
 	@Override
-	public MemberInfoData getMemberInfoData(String id, boolean isLookupId) {
-		PreparedStatementCreatorFactory pscf = (isLookupId ? getMemberInfoByLookupIdPscf : getMemberInfoByIdPscf);
+	public MemberInfoData getMemberInfoData(String id) {
+		PreparedStatementCreatorFactory pscf = getMemberInfoPscf;
+		Long memberId = Constants.UNKNOWN_VISITOR_ID;
 		PreparedStatementCreator psc = null;
 		MemberInfo memberInfo = null;
 		MemberInfo hofMemberInfo;
 		MemberInfoData memberInfoData = new MemberInfoData();
 		MemberInfoStatus memberInfoStatus = MemberInfoStatus.NOT_FOUND;
 
-		log.debug("id:  " + id + "; isLookupId:  " + isLookupId);
+		log.debug("id:  " + id);
 
-		if (!isLookupId) {
-			Long memberId = Constants.UNKNOWN_VISITOR_ID;
-
-			try {
-				memberId = Long.parseLong(id);
-			} catch (NumberFormatException e) {
-			}
-
-			if (memberId == Constants.UNKNOWN_VISITOR_ID) {
-				log.error(id + " is neither a valid lookup ID nor a member ID");
-			} else {
-				psc = pscf.newPreparedStatementCreator(new Object[] {memberId});
-			}
-		} else {
-			psc = pscf.newPreparedStatementCreator(new Object[] {id});
+		try {
+			memberId = Long.parseLong(id);
+		} catch (NumberFormatException e) {
 		}
+
+		psc = pscf.newPreparedStatementCreator(new Object[] {id, memberId});
 
 		if (psc != null) {
 			memberInfo = getMemberInfo(psc);
@@ -118,7 +86,7 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 
 						memberInfoStatus = MemberInfoStatus.INCOMPLETE;
 					} else {
-						psc = getMemberInfoByIdPscf.newPreparedStatementCreator(new Object[] {memberInfo.getHeadOfFamilyId()});
+						psc = getMemberInfoPscf.newPreparedStatementCreator(new Object[] {"", memberInfo.getHeadOfFamilyId()});
 						hofMemberInfo = getMemberInfo(psc);
 
 						if (hofMemberInfo != null) {
