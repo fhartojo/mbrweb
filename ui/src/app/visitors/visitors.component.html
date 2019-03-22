@@ -6,14 +6,19 @@
       <td mat-cell *matCellDef="let visitor">{{visitor.timestamp | date : "yyyy/M/d hh:mm:ssa"}}</td>
     </ng-container>
 
-    <ng-container matColumnDef="id">
+    <ng-container matColumnDef="memberId">
       <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td mat-cell *matCellDef="let visitor">{{("00000" + visitor.id).slice(-5)}}</td>
+      <td mat-cell *matCellDef="let visitor">{{("00000" + visitor.memberId).slice(-5)}}</td>
     </ng-container>
 
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let visitor">{{visitor.name}}</td>
+    <ng-container matColumnDef="lastName">
+      <th mat-header-cell *matHeaderCellDef>Last Name</th>
+      <td mat-cell *matCellDef="let visitor">{{visitor.lastName}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="firstName">
+      <th mat-header-cell *matHeaderCellDef>First Name</th>
+      <td mat-cell *matCellDef="let visitor">{{visitor.firstName}}</td>
     </ng-container>
 
     <ng-container matColumnDef="notes">

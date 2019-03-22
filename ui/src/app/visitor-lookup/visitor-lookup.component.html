@@ -1,5 +1,5 @@
 <form class="lookup-form">
   <mat-form-field class="lookup-full-width">
-    <input matInput #idLookup placeholder="ID">
+    <input matInput #idLookup placeholder="ID" (keydown.enter)="this.getVisitor($event.target.value)" />
   </mat-form-field>
 </form>

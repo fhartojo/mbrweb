@@ -17,7 +17,7 @@ public class VisitorRowMapper implements RowMapper<Visitor> {
 		Visitor visitor = new Visitor();
 
 		visitor.setMemberId(rs.getLong("mbr_id"));
-		visitor.setTimestamp(rs.getLong("visit_ts"));
+		visitor.setTimestamp(rs.getLong("visit_ts") * 1000L);
 		visitor.setOk(rs.getBoolean("visit_admit"));
 		visitor.setNotes(rs.getString("visit_note_txt"));
 

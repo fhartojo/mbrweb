@@ -7,7 +7,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>mbrweb</name>
 	<properties>
-		<spring.version>4.3.14.RELEASE</spring.version>
+		<spring.version>4.3.22.RELEASE</spring.version>
 		<log4j2.version>2.9.1</log4j2.version>
 		<jackson.version>2.9.3</jackson.version>
 		<junit.version>4.12</junit.version>
