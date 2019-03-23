@@ -6,14 +6,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
-import { VisitorLookupComponent } from './visitor-lookup/visitor-lookup.component';
+import { MatButtonModule } from '@angular/material/button';
 import { VisitorsComponent } from './visitors/visitors.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
-    VisitorLookupComponent,
     VisitorsComponent
   ],
   imports: [
@@ -22,7 +22,9 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
     MatTabsModule,
     MatInputModule,
-    MatTableModule
+    MatTableModule,
+    MatButtonModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

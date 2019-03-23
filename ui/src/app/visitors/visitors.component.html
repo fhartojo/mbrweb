@@ -1,5 +1,12 @@
+<form class="lookup-form" [formGroup]="idForm" (ngSubmit)="this.getVisitor()">
+  <mat-form-field class="lookup-full-width">
+    <input matInput #idLookup placeholder="ID" formControlName="id" />
+    <button mat-raised-button matSuffix type="submit">Enter</button>
+  </mat-form-field>
+</form>
+
 <div class="example-container mat-elevation-z8">
-  <table mat-table [dataSource]="visitors">
+  <table mat-table [dataSource]="dataSource">
 
     <ng-container matColumnDef="timestamp">
       <th mat-header-cell *matHeaderCellDef>Time</th>

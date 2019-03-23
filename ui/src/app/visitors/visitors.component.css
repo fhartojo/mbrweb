@@ -1,3 +1,13 @@
+.lookup-form {
+  min-width: 150px;
+  max-width: 250px;
+  width: 100%;
+}
+
+.lookup-full-width {
+  width: 100%;
+}
+
 .example-container {
   height: 400px;
   overflow: auto;

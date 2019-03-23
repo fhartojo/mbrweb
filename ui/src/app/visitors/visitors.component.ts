@@ -1,16 +1,25 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { VisitorDataService } from '../visitor-data.service';
 import { Visitor } from '../visitor';
+import { FormGroup, FormControl } from '@angular/forms';
+import { MatTable } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-visitors',
   templateUrl: './visitors.component.html',
   styleUrls: ['./visitors.component.css']
 })
-export class VisitorsComponent implements OnInit {
+export class VisitorsComponent implements OnInit, OnDestroy, AfterViewInit {
 
+  @ViewChild('idLookup') idLookupElement: ElementRef;
+  idForm = new FormGroup({
+    id: new FormControl('')
+  });
+  @ViewChild(MatTable) table: MatTable<Visitor>;
+  private visitors: Visitor[];
   displayedColumns: string[] = ['timestamp', 'memberId', 'lastName', 'firstName', 'notes'];
-  visitors: Visitor[];
+  dataSource = new MatTableDataSource<Visitor>();
 
   constructor(private visitorDataService: VisitorDataService) {
     console.log(`VisitorsComponent:  constructor()`);
@@ -18,15 +27,36 @@ export class VisitorsComponent implements OnInit {
 
   ngOnInit() {
     console.log(`VisitorsComponent:  ngOnInit()`);
-    this.visitorDataService.visitors$.subscribe(visitors => this.visitors = visitors);
     this.getVisitors();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.idLookupElement.nativeElement.focus();
+    }, 0);
   }
 
   ngOnDestroy() {
     console.log(`VisitorsComponent:  ngOnDestroy`);
   }
 
-  getVisitors(): void {
-    this.visitorDataService.getVisitors().subscribe(visitors => this.visitorDataService.initVisitors(visitors));
+  getVisitor() {
+    let id: string = this.idForm.get("id").value.trim();
+
+    if (id !== "") {
+      this.visitorDataService.getVisitor(id).subscribe({
+        next: visitor => this.visitors.splice(0, 0, visitor)
+        , complete: () => this.dataSource = new MatTableDataSource(this.visitors)
+      });
+    }
+
+    this.idForm.get("id").setValue("");
+  }
+
+  getVisitors() {
+    this.visitorDataService.getVisitors().subscribe({
+      next: visitors => this.visitors = visitors
+      , complete: () => this.dataSource = new MatTableDataSource(this.visitors)
+    });
   }
 }
