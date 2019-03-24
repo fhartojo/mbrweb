@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } fr
 import { VisitorDataService } from '../visitor-data.service';
 import { Visitor } from '../visitor';
 import { FormGroup, FormControl } from '@angular/forms';
-import { MatTable } from '@angular/material';
 import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
@@ -16,7 +15,6 @@ export class VisitorsComponent implements OnInit, OnDestroy, AfterViewInit {
   idForm = new FormGroup({
     id: new FormControl('')
   });
-  @ViewChild(MatTable) table: MatTable<Visitor>;
   private visitors: Visitor[];
   displayedColumns: string[] = ['timestamp', 'memberId', 'lastName', 'firstName', 'notes'];
   dataSource = new MatTableDataSource<Visitor>();
@@ -46,7 +44,7 @@ export class VisitorsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (id !== "") {
       this.visitorDataService.getVisitor(id).subscribe({
         next: visitor => this.visitors.splice(0, 0, visitor)
-        , complete: () => this.dataSource = new MatTableDataSource(this.visitors)
+        , complete: () => this.dataSource.data = this.visitors
       });
     }
 
@@ -56,7 +54,7 @@ export class VisitorsComponent implements OnInit, OnDestroy, AfterViewInit {
   getVisitors() {
     this.visitorDataService.getVisitors().subscribe({
       next: visitors => this.visitors = visitors
-      , complete: () => this.dataSource = new MatTableDataSource(this.visitors)
+      , complete: () => this.dataSource.data = this.visitors
     });
   }
 }
