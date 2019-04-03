@@ -37,18 +37,23 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 			+ "from "
 			+ 	"mbr_lu "
 			+ 	",mbr "
+			+ 	",loader "
 			+ "left join "
 			+ 	"mbr_mbrship "
 			+ "on "
 			+ 	"mbr_mbrship.mbr_id=mbr_lu.mbr_id "
+			+ 	"and mbr_mbrship.load_id=loader.load_id "
 			+ "left join "
 			+	"mbr_note "
 			+ "on "
 			+ 	"mbr_note.mbr_id=mbr_lu.mbr_id "
+			+ 	"and mbr_note.load_id=loader.load_id "
 			+ "where "
 			+ 	"(mbr_lu.mbr_lu_id=? "
 			+	"or mbr.mbr_id=?) "
-			+ 	"and mbr.mbr_id=mbr_lu.mbr_id"
+			+ 	"and mbr.mbr_id=mbr_lu.mbr_id "
+			+ 	"and mbr.load_id=loader.load_id "
+			+ 	"and loader.active_ind=1"
 			, Types.VARCHAR
 			, Types.BIGINT
 	);
@@ -57,7 +62,6 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 
 	@Override
 	public MemberInfoData getMemberInfoData(String id) {
-		PreparedStatementCreatorFactory pscf = getMemberInfoPscf;
 		Long memberId = Constants.UNKNOWN_VISITOR_ID;
 		PreparedStatementCreator psc = null;
 		MemberInfo memberInfo = null;
@@ -72,7 +76,7 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 		} catch (NumberFormatException e) {
 		}
 
-		psc = pscf.newPreparedStatementCreator(new Object[] {id, memberId});
+		psc = getMemberInfoPscf.newPreparedStatementCreator(new Object[] {id, memberId});
 
 		if (psc != null) {
 			memberInfo = getMemberInfo(psc);
