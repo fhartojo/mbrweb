@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -69,7 +69,7 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 			+	"visit_ts desc limit 20"
 	);
 
-	private static final Logger log = LogManager.getLogger(VisitorModelService.class);
+	private static final Logger log = LoggerFactory.getLogger(VisitorModelService.class);
 
 	@Override
 	public Visitor getVisitor(String id) {

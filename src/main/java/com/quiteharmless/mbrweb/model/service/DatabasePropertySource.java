@@ -12,13 +12,13 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.core.env.PropertiesPropertySource;
 
 public class DatabasePropertySource extends PropertiesPropertySource {
 
-	private static final Logger log = LogManager.getLogger(DatabasePropertySource.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabasePropertySource.class);
 
 	public DatabasePropertySource(String name, Properties source) {
 		super(name, source);

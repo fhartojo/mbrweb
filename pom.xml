@@ -7,14 +7,20 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>mbrweb</name>
 	<properties>
-		<spring.version>4.3.22.RELEASE</spring.version>
-		<log4j2.version>2.9.1</log4j2.version>
+		<spring.version>4.3.23.RELEASE</spring.version>
+		<log4j2.version>2.11.2</log4j2.version>
 		<jackson.version>2.9.8</jackson.version>
 		<junit.version>4.12</junit.version>
-		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
-		<commons-lang3.version>3.7</commons-lang3.version>
+		<sqlite-jdbc.version>3.27.2.1</sqlite-jdbc.version>
+		<commons-lang3.version>3.8.1</commons-lang3.version>
+		<google-api-services-sheets.version>v4-rev571-1.24.1</google-api-services-sheets.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-sheets</artifactId>
+			<version>${google-api-services-sheets.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
@@ -37,17 +43,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-web</artifactId>
+			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>${log4j2.version}</version>
 		</dependency>
 		<dependency>

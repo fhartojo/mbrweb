@@ -3,8 +3,8 @@ package com.quiteharmless.mbrweb.model.service;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -58,7 +58,7 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 			, Types.BIGINT
 	);
 
-	private static final Logger log = LogManager.getLogger(MemberInfoDataModelService.class);
+	private static final Logger log = LoggerFactory.getLogger(MemberInfoDataModelService.class);
 
 	@Override
 	public MemberInfoData getMemberInfoData(String id) {
