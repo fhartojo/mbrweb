@@ -51,6 +51,9 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 	@Value("${expirationDaysWarn}")
 	private long expirationDaysWarn;
 
+	@Value("${timezoneId}")
+	private String timezoneId;
+
 	PreparedStatementCreatorFactory insertMemberVisitHistoryPscf = new PreparedStatementCreatorFactory(
 			"insert into mbr_visit_hist(mbr_id, visit_admit, visit_st_cd, visit_ts, visit_note_txt) values(?, ?, ?, datetime(?, 'unixepoch'), ?)"
 			, Types.BIGINT, Types.BOOLEAN, Types.INTEGER, Types.TIMESTAMP, Types.VARCHAR
@@ -76,7 +79,8 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 		log.debug("id:  " + id);
 
 		long now = System.currentTimeMillis();
-		ZonedDateTime todayZdt = Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault());
+		ZoneId zoneId = ZoneId.of(this.timezoneId);
+		ZonedDateTime todayZdt = Instant.ofEpochMilli(now).atZone(zoneId);
 		LocalDate todayDate = todayZdt.toLocalDate();
 		MemberInfo memberInfo;
 		MemberInfoData memberInfoData = memberInfoDataModelService.getMemberInfoData(id);
