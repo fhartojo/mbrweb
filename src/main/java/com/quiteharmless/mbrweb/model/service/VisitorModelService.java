@@ -76,8 +76,6 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 
 	@Override
 	public Visitor getVisitor(String id) {
-		log.debug("id:  " + id);
-
 		long now = System.currentTimeMillis();
 		ZoneId zoneId = ZoneId.of(this.timezoneId);
 		ZonedDateTime todayZdt = Instant.ofEpochMilli(now).atZone(zoneId);

@@ -6,21 +6,35 @@
 				<Pattern>%d{ISO8601}|%t|%p|%c.%M|%m%n</Pattern>
 			</PatternLayout>
 			<Policies>
-				<SizeBasedTriggeringPolicy size="50MB" />
+				<SizeBasedTriggeringPolicy size="10MB" />
 			</Policies>
 			<DefaultRolloverStrategy max="5" />
 		</RollingRandomAccessFile>
+
+		<JDBC name="appLogDB" tableName="log" ignoreExceptions="true">
+			<DataSource jndiName="java:/comp/env/jdbc/logDB" />
+			<Column name="id" pattern="%u{RANDOM}" isUnicode="false" />
+			<Column name="timestamp" isEventTimestamp="true" />
+			<Column name="level" pattern="%p" isUnicode="false" />
+			<Column name="logger" pattern="%c.%M" isUnicode="false" />
+			<Column name="message" pattern="%m" isUnicode="false" />
+			<Column name="exception" pattern="%ex{3}" isUnicode="false" />
+		</JDBC>
 	</Appenders>
+
 	<Loggers>
 		<Logger name="org.springframework" level="debug" additivity="false">
 			<AppenderRef ref="appLog" />
 		</Logger>
+
 		<Logger name="com.quiteharmless" level="debug" additivity="false">
-			<AppenderRef ref="appLog" />
+			<AppenderRef ref="appLog" level="debug" />
+			<AppenderRef ref="appLogDB" level="info" />
 		</Logger>
+
 <!--
-		<Root level="debug">
-			<AppenderRef ref="STDOUT" />
+		<Root level="info">
+			<AppenderRef ref="appLogDB" />
 		</Root>
 -->
 	</Loggers>

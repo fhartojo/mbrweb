@@ -25,11 +25,16 @@
 	<mvc:default-servlet-handler/>
 
 	<jee:jndi-lookup id="appDB" jndi-name="jdbc/appDB" />
+	<jee:jndi-lookup id="logDB" jndi-name="jdbc/logDB" />
 	<jee:jndi-lookup id="memberDB" jndi-name="jdbc/memberDB" />
 	<jee:jndi-lookup id="visitorDB" jndi-name="jdbc/visitorDB" />
 
 	<bean id="appJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<property name="dataSource" ref="appDB" />
+	</bean>
+
+	<bean id="logJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="logDB" />
 	</bean>
 
 	<bean id="memberJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">

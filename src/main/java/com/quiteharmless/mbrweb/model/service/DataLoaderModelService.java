@@ -135,6 +135,8 @@ public class DataLoaderModelService extends AbstractBaseModelService implements 
 			loadMembersData(values, loadId);
 			recordLoad(loadId);
 			purgeOldMembersData();
+
+			log.info("Loaded " + values.size() + " rows in " + (System.currentTimeMillis() - loadId) + "ms");
 		} catch (Exception e) {
 			log.error("Exception", e);
 
