@@ -10,17 +10,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { VisitorsComponent } from './visitors/visitors.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MembershipComponent, DataLoadSpinner } from './membership/membership.component';
+import { MaintenanceLogComponent } from './maintenance-log/maintenance-log.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     VisitorsComponent,
     MembershipComponent,
-    DataLoadSpinner
+    DataLoadSpinner,
+    MaintenanceLogComponent
   ],
   imports: [
     BrowserModule,
@@ -33,6 +36,7 @@ import { MembershipComponent, DataLoadSpinner } from './membership/membership.co
     MatProgressSpinnerModule,
     MatIconModule,
     MatDialogModule,
+    MatSnackBarModule,
     ReactiveFormsModule
   ],
   entryComponents: [

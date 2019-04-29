@@ -9,7 +9,7 @@
 }
 
 .example-container {
-  height: 400px;
+  height: 100vh;
   overflow: auto;
 }
 

@@ -1,0 +1,8 @@
+.maintenance-log-div {
+  height: 100vh;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+}

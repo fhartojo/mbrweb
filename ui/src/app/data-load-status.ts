@@ -1,4 +1,4 @@
 export class DataLoadStatus {
-  ok: string;
+  ok: boolean;
   message: string;
 }
