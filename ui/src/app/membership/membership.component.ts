@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataLoaderService } from '../data-loader.service';
 import { DataLoadStatus } from '../data-load-status';
-import { MatDialog, MatDialogRef } from '@angular/material';
-import { MatSnackBar } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 
 @Component({
