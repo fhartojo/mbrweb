@@ -11,7 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class VisitorsComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('idLookup') idLookupElement: ElementRef;
+  @ViewChild('idLookup', { static: true }) idLookupElement: ElementRef;
   idForm = new FormGroup({
     id: new FormControl('')
   });
