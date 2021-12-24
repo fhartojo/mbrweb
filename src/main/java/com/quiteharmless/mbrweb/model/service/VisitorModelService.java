@@ -6,11 +6,12 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -25,8 +26,8 @@ import com.quiteharmless.mbrweb.bo.Visitor;
 import com.quiteharmless.mbrweb.model.IMemberInfoDataModelService;
 import com.quiteharmless.mbrweb.model.IMembershipTypeModelService;
 import com.quiteharmless.mbrweb.model.IVisitorModelService;
+import com.quiteharmless.mbrweb.model.rowmapper.VisitorRowMapper;
 import com.quiteharmless.mbrweb.util.Constants;
-import com.quiteharmless.mbrweb.util.MemberInfoStatus;
 import com.quiteharmless.mbrweb.util.MemberVisitStatus;
 
 @Component("visitorModelService")
@@ -50,35 +51,44 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 	@Value("${expirationDaysWarn}")
 	private long expirationDaysWarn;
 
+	@Value("${timezoneId}")
+	private String timezoneId;
+
 	PreparedStatementCreatorFactory insertMemberVisitHistoryPscf = new PreparedStatementCreatorFactory(
 			"insert into mbr_visit_hist(mbr_id, visit_admit, visit_st_cd, visit_ts, visit_note_txt) values(?, ?, ?, datetime(?, 'unixepoch'), ?)"
 			, Types.BIGINT, Types.BOOLEAN, Types.INTEGER, Types.TIMESTAMP, Types.VARCHAR
 	);
 
-	private static final Logger log = LogManager.getLogger(VisitorModelService.class);
+	PreparedStatementCreatorFactory getVisitorsPscf = new PreparedStatementCreatorFactory(
+			"select "
+			+	"mbr_id"
+			+	", visit_admit"
+			+	", visit_st_cd"
+			+	", strftime('%s', visit_ts) as visit_ts"
+			+	", visit_note_txt"
+			+ " from "
+			+	"mbr_visit_hist"
+			+ " order by "
+			+	"visit_ts desc limit 20"
+	);
+
+	private static final Logger log = LoggerFactory.getLogger(VisitorModelService.class);
 
 	@Override
-	public Visitor getVisitorInfo(String lookupId) {
-		log.debug("lookupId:  " + lookupId);
-
+	public Visitor getVisitor(String id) {
 		long now = System.currentTimeMillis();
-		ZonedDateTime todayZdt = Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault());
+		ZoneId zoneId = ZoneId.of(this.timezoneId);
+		ZonedDateTime todayZdt = Instant.ofEpochMilli(now).atZone(zoneId);
 		LocalDate todayDate = todayZdt.toLocalDate();
 		MemberInfo memberInfo;
-		MemberInfoData memberInfoData = memberInfoDataModelService.getMemberInfoData(lookupId, true);
+		MemberInfoData memberInfoData = memberInfoDataModelService.getMemberInfoData(id);
 		MemberVisitStatus memberVisitStatus = MemberVisitStatus.REJECT;
 		String memberVisitStatusMessage = "";
 		String customMessage = "";
 		Visitor visitor = new Visitor();
 
 		visitor.setTimestamp(now);
-		visitor.setLookupId(lookupId);
-
-		if (memberInfoData.getStatus() == MemberInfoStatus.NOT_FOUND) {
-			log.debug("Trying lookupId as a member ID");
-
-			memberInfoData = memberInfoDataModelService.getMemberInfoData(lookupId, false);
-		}
+		visitor.setLookupId(id);
 
 		memberInfo = memberInfoData.getData();
 
@@ -144,16 +154,41 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 			visitor.setOk(false);
 			visitor.setFirstName(Constants.UNKNOWN_VISITOR_NAME);
 			visitor.setLastName(Constants.UNKNOWN_VISITOR_NAME);
+
+			log.info("Unknown ID:  {}", id);
+
 			break;
 		}
 
-		log.debug("customMessage:  " + customMessage + "; memberVisitStatusMessage:  " + memberVisitStatusMessage);
+		log.debug("customMessage:  {}; memberVisitStatusMessage:  {}", customMessage, memberVisitStatusMessage);
 
 		visitor.setNotes(StringUtils.isNotBlank(customMessage) ? customMessage : memberVisitStatusMessage);
 
 		insertVisitorData(visitor, memberVisitStatus);
 
 		return visitor;
+	}
+
+	@Override
+	public List<Visitor> getVisitors() {
+		PreparedStatementCreator psc = getVisitorsPscf.newPreparedStatementCreator((List<?>) null);
+
+		List<Visitor> visitors = this.visitorJdbcTemplate.query(psc, new VisitorRowMapper());
+
+		for (Visitor visitor:  visitors) {
+			MemberInfoData memberInfoData = memberInfoDataModelService.getMemberInfoData(visitor.getMemberId().toString());
+			MemberInfo memberInfo = memberInfoData.getData();
+
+			visitor.setFirstName(Constants.UNKNOWN_VISITOR_NAME);
+			visitor.setLastName(Constants.UNKNOWN_VISITOR_NAME);
+
+			if (memberInfo != null) {
+				visitor.setFirstName(memberInfo.getFirstName());
+				visitor.setLastName(memberInfo.getLastName());
+			}
+		}
+
+		return visitors;
 	}
 
 	private void insertVisitorData(Visitor visitor, MemberVisitStatus memberVisitStatus) {

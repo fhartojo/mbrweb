@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+">
+
+	<context:component-scan base-package="com.quiteharmless.mbrweb" />
+
+	<context:annotation-config />
+
+	<task:annotation-driven/>
+
+	<mvc:annotation-driven />
+
+	<mvc:default-servlet-handler/>
+
+	<jee:jndi-lookup id="appDB" jndi-name="jdbc/appDB" />
+	<jee:jndi-lookup id="logDB" jndi-name="jdbc/logDB" />
+	<jee:jndi-lookup id="memberDB" jndi-name="jdbc/memberDB" />
+	<jee:jndi-lookup id="visitorDB" jndi-name="jdbc/visitorDB" />
+
+	<bean id="appJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="appDB" />
+	</bean>
+
+	<bean id="logJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="logDB" />
+	</bean>
+
+	<bean id="memberJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="memberDB" />
+	</bean>
+
+	<bean id="visitorJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="visitorDB" />
+	</bean>
+
+	<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" />
+</beans>

@@ -10,8 +10,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractMessageSource;
 import org.springframework.dao.DataAccessException;
@@ -33,7 +33,7 @@ public class DatabaseBackedMessageSource extends AbstractMessageSource {
 
 	private PreparedStatementCreator psc = this.pscf.newPreparedStatementCreator((List<?>) null);
 
-	private static final Logger log = LogManager.getLogger(DatabaseBackedMessageSource.class);
+	private static final Logger log = LoggerFactory.getLogger(DatabaseBackedMessageSource.class);
 
 	@PostConstruct
 	private void init() {
