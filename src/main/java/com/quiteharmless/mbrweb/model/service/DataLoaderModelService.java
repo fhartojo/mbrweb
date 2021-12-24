@@ -23,12 +23,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.quiteharmless.mbrweb.model.IDataLoaderModelService;
@@ -54,7 +54,7 @@ public class DataLoaderModelService extends AbstractBaseModelService implements 
 
 	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
 
-	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
 	private PreparedStatementCreatorFactory replaceMemberPscf = new PreparedStatementCreatorFactory(
 			"insert or replace into mbr(mbr_id, first_nm, last_nm, load_id) values(?, ?, ?, ?)"
@@ -136,7 +136,7 @@ public class DataLoaderModelService extends AbstractBaseModelService implements 
 			recordLoad(loadId);
 			purgeOldMembersData();
 
-			log.info("Loaded " + values.size() + " rows in " + (System.currentTimeMillis() - loadId) + "ms");
+			log.info("Loaded {} rows in {}ms", values.size(), (System.currentTimeMillis() - loadId));
 		} catch (Exception e) {
 			log.error("Exception", e);
 
@@ -214,7 +214,7 @@ public class DataLoaderModelService extends AbstractBaseModelService implements 
 						endDate = LocalDate.parse(endDateString, formatter);
 					} else {
 						if (isCurrent.intValue() == 1) {
-							log.error("endDateString is blank");
+							log.error("endDateString is blank for {}", idString);
 
 							endDate = null;
 						} else {
@@ -238,7 +238,7 @@ public class DataLoaderModelService extends AbstractBaseModelService implements 
 						endDate = LocalDate.parse(endDateString, formatter);
 					} else {
 						if (isCurrent.intValue() == 1) {
-							log.error("endDateString is blank");
+							log.error("endDateString is blank for {}", idString);
 
 							endDate = null;
 						} else {
@@ -255,7 +255,7 @@ public class DataLoaderModelService extends AbstractBaseModelService implements 
 						endDate = LocalDate.parse(endDateString, formatter);
 					} else {
 						if (isCurrent.intValue() == 1) {
-							log.error("endDateString is blank");
+							log.error("endDateString is blank for {}", idString);
 
 							endDate = null;
 						} else {
@@ -279,7 +279,7 @@ public class DataLoaderModelService extends AbstractBaseModelService implements 
 						endDate = LocalDate.parse(endDateString, formatter);
 					} else {
 						if (isCurrent.intValue() == 1) {
-							log.error("endDateString is blank");
+							log.error("endDateString is blank for {}", idString);
 
 							endDate = null;
 						} else {
@@ -287,7 +287,7 @@ public class DataLoaderModelService extends AbstractBaseModelService implements 
 						}
 					}
 				} else {
-					log.error("Unrecognised typeLength:  " + typeLength);
+					log.error("Unrecognised typeLength:  {} for {}", typeLength, idString);
 				}
 			}
 

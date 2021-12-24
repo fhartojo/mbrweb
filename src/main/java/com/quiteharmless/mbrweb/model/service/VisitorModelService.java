@@ -154,10 +154,13 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 			visitor.setOk(false);
 			visitor.setFirstName(Constants.UNKNOWN_VISITOR_NAME);
 			visitor.setLastName(Constants.UNKNOWN_VISITOR_NAME);
+
+			log.info("Unknown ID:  {}", id);
+
 			break;
 		}
 
-		log.debug("customMessage:  " + customMessage + "; memberVisitStatusMessage:  " + memberVisitStatusMessage);
+		log.debug("customMessage:  {}; memberVisitStatusMessage:  {}", customMessage, memberVisitStatusMessage);
 
 		visitor.setNotes(StringUtils.isNotBlank(customMessage) ? customMessage : memberVisitStatusMessage);
 
