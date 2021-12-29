@@ -148,14 +148,12 @@ public class VisitorModelService extends AbstractBaseModelService implements IVi
 
 		case NOT_FOUND:
 			memberVisitStatus = MemberVisitStatus.UNKNOWN;
-			memberVisitStatusMessage = messageSource.getMessage("visit.reject.unknown", null, Locale.getDefault());
+			memberVisitStatusMessage = messageSource.getMessage("visit.reject.unknown", new Object[] {id}, Locale.getDefault());
 
 			visitor.setMemberId(Constants.UNKNOWN_VISITOR_ID);
 			visitor.setOk(false);
 			visitor.setFirstName(Constants.UNKNOWN_VISITOR_NAME);
 			visitor.setLastName(Constants.UNKNOWN_VISITOR_NAME);
-
-			log.info("Unknown ID:  {}", id);
 
 			break;
 		}
