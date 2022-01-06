@@ -53,6 +53,7 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 			+	"or mbr.mbr_id=?) "
 			+ 	"and mbr.mbr_id=mbr_lu.mbr_id "
 			+ 	"and mbr.load_id=loader.load_id "
+			+ 	"and mbr_lu.load_id=loader.load_id "
 			+ 	"and loader.active_ind=1"
 			, Types.VARCHAR
 			, Types.BIGINT
@@ -124,11 +125,9 @@ public class MemberInfoDataModelService extends AbstractBaseModelService impleme
 		if (psc != null) {
 			List<MemberInfo> memberInfoList = this.memberJdbcTemplate.query(psc, new MemberInfoRowMapper());
 
-			log.debug("memberInfoList.size() = " + memberInfoList.size());
-
 			if (memberInfoList.size() >= 1) {
 				if (memberInfoList.size() > 1) {
-					log.warn("memberInfoList.size() = " + memberInfoList.size());
+					log.warn("ID:  {}; memberInfoList.size() = {}", memberInfoList.get(0).getMemberId(), memberInfoList.size());
 				}
 
 				return memberInfoList.get(0);
